@@ -2,9 +2,13 @@
 from django.shortcuts import render
 from django.contrib import messages
 from .forms import ContatoForm, ProdutoModelForm
+from .models import Produto
 
 def index(request):
-    return render(request, 'index.html')
+    context = {
+        'produtos': Produto.objects.all()
+    }
+    return render(request, 'index.html', context)
 
 
 def contato(request):
@@ -29,12 +33,7 @@ def produto(request):
     if str(request.method) == 'POST':
         form = ProdutoModelForm(request.POST, request.FILES)
         if form.is_valid():
-            prod = form.save(commit=False)
-            
-            print(f'Nome: {prod.nome}')
-            print(f'Preço: {prod.preco}')
-            print(f'Estoque: {prod.estoque}')
-
+            form.save()
             messages.success(request, 'Produto salvo com sucesso.')
             form = ProdutoModelForm() # limpa as entradas do form na página
         else:
